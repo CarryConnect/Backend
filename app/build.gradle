@@ -1,0 +1,80 @@
+plugins {
+    id 'org.springframework.boot' version '3.1.0'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'java'
+    id 'application'
+    id 'jacoco'
+    id 'org.sonarqube' version '3.3'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Dépendances Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.postgresql:postgresql:42.5.1'  // Dépendance pour PostgreSQL
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Hibernate JPA compatible avec Spring Boot 3.x
+    implementation 'org.hibernate.orm:hibernate-core:6.2.8.Final'  // Mise à jour vers Hibernate 6.2.8 compatible Spring Boot 3
+
+    // JUnit pour les tests
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Jacoco pour rapports de couverture de tests
+    testImplementation 'org.jacoco:org.jacoco.core:0.8.8'
+
+    // Swagger pour documentation de l'API
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
+
+    // Asciidoc pour documentation de l'API
+    implementation 'org.springframework.restdocs:spring-restdocs-restassured'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+springBoot {
+    mainClass = 'fr.parisnanterre.noah.CarryConnectApplication'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.named('build') {
+    dependsOn 'jacocoTestReport'
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true   // Génération du rapport XML
+        html.required = true  // Génération du rapport HTML
+    }
+}
+
+// Configuration de SonarCloud
+sonarqube {
+    properties {
+        property "sonar.projectKey", "your_project_key"  // Remplacez par votre clé de projet Sonar
+        property "sonar.organization", "your_organization"  // Remplacez par votre organisation Sonar
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.java.binaries", "${buildDir}/classes"
+    }
+}
+
+application {
+    mainClass = 'fr.parisnanterre.noah.CarryConnectApplication'
+}
